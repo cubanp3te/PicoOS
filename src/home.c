@@ -17,11 +17,25 @@ void picoos_home()
     {
         ch = getchar();
 
-        if(ch != '\n' && ch != '\r')
+        if(ch != '\n' && ch != '\r'
+           && ch != '\377') // \377 appears to be sent on start?
         {
-            printf("%c", ch);
-            line[linelen] = ch;
-            linelen++;
+            if(ch != '\b')
+            {
+                printf("%c", ch);
+                line[linelen] = ch;
+                linelen++;
+            }
+            else
+            {
+                if(linelen > 0)
+                {
+                    printf("\b\x20\b"); // backspace, space (delete char),
+                                        // backspace
+                    linelen--;
+                    line[linelen] = '\0'; // Remove last char
+                }
+            }
         }
         else
         {
