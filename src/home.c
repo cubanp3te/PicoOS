@@ -1,70 +1,39 @@
 #include "home.h"
 #include "config.h"
 #include "hardware/gpio.h"
+#include "util.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-const char prompt[] = "interactive> ";
-char line[100];
-int linelen = 0;
+static const char prompt[] = "interactive> ";
 const unsigned int GPIO_PIN = 18;
 
 void picoos_home()
 {
-    printf(prompt);
-    char ch;
-
-    while(linelen < 100)
+    do
     {
-        ch = getchar();
+        char line[100];
 
-        if(ch != '\n' && ch != '\r'
-           && ch != '\377') // \377 appears to be sent on start?
+        picoos_util_getline(prompt, line, sizeof(line));
+
+        if(strcmp(line, "on") == 0)
         {
-            if(ch != '\b')
-            {
-                printf("%c", ch);
-                line[linelen] = ch;
-                linelen++;
-            }
-            else
-            {
-                if(linelen > 0)
-                {
-                    printf("\b\x20\b"); // backspace, space (delete char),
-                                        // backspace
-                    linelen--;
-                    line[linelen] = '\0'; // Remove last char
-                }
-            }
+            gpio_put(GPIO_PIN, 1);
+        }
+        else if(strcmp(line, "off") == 0)
+        {
+            gpio_put(GPIO_PIN, 0);
+        }
+        else if(strcmp(line, "config") == 0)
+        {
+            picoos_config();
         }
         else
         {
-            line[linelen] = '\0';
-            linelen++;
-            break;
+            printf("Valid commands are: on, off, config\n");
         }
-    }
+    } while(true); // command loop
 
-    printf("\n%s\n", line);
-
-    if(strcmp(line, "on") == 0)
-    {
-        gpio_put(GPIO_PIN, 1);
-    }
-    else if(strcmp(line, "off") == 0)
-    {
-        gpio_put(GPIO_PIN, 0);
-    }
-    else if(strcmp(line, "config") == 0)
-    {
-        picoos_config();
-    }
-    else
-    {
-        printf("Valid commands are: on, off\n");
-    }
-
-    linelen = 0;
-    line[0] = '\0';
+    return;
 }
