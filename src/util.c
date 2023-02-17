@@ -1,17 +1,12 @@
-#include "home.h"
-#include "config.h"
-#include "hardware/gpio.h"
+#include "util.h"
+#include <stddef.h>
 #include <stdio.h>
-#include <string.h>
 
-const char prompt[] = "interactive> ";
-char line[100];
-int linelen = 0;
-const unsigned int GPIO_PIN = 18;
-
-void picoos_home()
+void picoos_util_getline(const char prompt[], char *line, size_t size)
 {
-    printf(prompt);
+    int linelen = 0;
+
+    printf("%s", prompt);
     char ch;
 
     while(linelen < 100)
@@ -47,24 +42,5 @@ void picoos_home()
     }
 
     printf("\n%s\n", line);
-
-    if(strcmp(line, "on") == 0)
-    {
-        gpio_put(GPIO_PIN, 1);
-    }
-    else if(strcmp(line, "off") == 0)
-    {
-        gpio_put(GPIO_PIN, 0);
-    }
-    else if(strcmp(line, "config") == 0)
-    {
-        picoos_config();
-    }
-    else
-    {
-        printf("Valid commands are: on, off\n");
-    }
-
-    linelen = 0;
-    line[0] = '\0';
+    return;
 }

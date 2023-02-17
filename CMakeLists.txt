@@ -17,7 +17,7 @@ pico_sdk_init()
 # Main project artifacts
 add_executable(pico_os src/main.c)
 
-target_sources(pico_os PRIVATE src/home.c src/home.h)
+target_sources(pico_os PRIVATE src/util.c src/util.h src/config.c src/config.h src/home.c src/home.h)
 
 # pull in common dependencies
 target_link_libraries(pico_os pico_stdlib)
